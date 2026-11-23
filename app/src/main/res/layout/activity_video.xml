@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <TextView android:id="@+id/back" style="@style/Back" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <TextView style="@style/Title" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Video Ekle" />
+
+            <LinearLayout style="@style/Card" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="20dp" android:orientation="vertical">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HEDEF DİSK"
+                    android:textColor="@color/sub" android:textSize="12sp" android:textStyle="bold" android:letterSpacing="0.1" />
+                <TextView android:id="@+id/diskName" style="@style/CardTitle" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="6dp" />
+                <TextView android:id="@+id/diskHint" style="@style/Sub" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textSize="14sp" />
+                <TextView android:id="@+id/btnPickDisk" style="@style/Btn2" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:text="USB diski seç" />
+            </LinearLayout>
+
+            <TextView android:id="@+id/btnPickVideo" style="@style/Btn2" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="16dp" android:text="+  Video seç" />
+
+            <TextView android:id="@+id/empty" style="@style/Sub" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="24dp" android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="Henüz video seçmedin.\nSeçtiğin her videoyu TV'de açılıp açılmayacağına göre kontrol edeceğim." />
+
+            <LinearLayout android:id="@+id/list" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/card" android:orientation="vertical" android:paddingLeft="20dp"
+        android:paddingRight="20dp" android:paddingBottom="16dp">
+        <TextView android:id="@+id/summary" style="@style/Sub" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:textSize="14sp" />
+        <TextView android:id="@+id/btnStart" style="@style/Btn" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Diske aktar" />
+    </LinearLayout>
+</LinearLayout>

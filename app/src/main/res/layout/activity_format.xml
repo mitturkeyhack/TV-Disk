@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="20dp">
+
+        <TextView android:id="@+id/back" style="@style/Back" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+        <TextView style="@style/Title" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:text="TV'ye Uyumlu Yap" />
+
+        <!-- Durum / bekleme -->
+        <LinearLayout android:id="@+id/waitBox" style="@style/Card" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <ProgressBar android:id="@+id/spinner" android:layout_width="28dp" android:layout_height="28dp"
+                android:indeterminateTint="@color/accent" />
+            <TextView android:id="@+id/waitText" android:layout_width="0dp" android:layout_height="wrap_content"
+                android:layout_marginStart="14dp" android:layout_weight="1" android:textColor="@color/text" android:textSize="16sp" />
+        </LinearLayout>
+        <TextView android:id="@+id/btnRetry" style="@style/Btn2" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Tekrar dene" android:visibility="gone" />
+
+        <!-- Disk bilgisi -->
+        <LinearLayout android:id="@+id/infoCard" style="@style/Card" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="20dp" android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TAKILI DİSK"
+                android:textColor="@color/sub" android:textSize="12sp" android:textStyle="bold" android:letterSpacing="0.1" />
+            <TextView android:id="@+id/infoName" style="@style/CardTitle" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="6dp" />
+            <TextView android:id="@+id/infoCap" style="@style/Sub" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="4dp" />
+            <TextView android:id="@+id/infoFormat" style="@style/Sub" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="2dp" />
+            <TextView android:id="@+id/infoNote" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" android:textSize="15sp" android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Seçenekler -->
+        <LinearLayout android:id="@+id/optionsBox" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="22dp"
+                android:text="Nasıl formatlansın?" android:textColor="@color/text" android:textSize="17sp" android:textStyle="bold" />
+
+            <LinearLayout android:id="@+id/optSafe" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" android:background="@drawable/bg_option_sel" android:clickable="true"
+                android:focusable="true" android:orientation="vertical" android:padding="16dp">
+                <TextView android:id="@+id/optSafeTitle" style="@style/CardTitle" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textSize="17sp" />
+                <TextView android:id="@+id/optSafeDesc" style="@style/Sub" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <LinearLayout android:id="@+id/optFull" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" android:background="@drawable/bg_option" android:clickable="true"
+                android:focusable="true" android:orientation="vertical" android:padding="16dp">
+                <TextView android:id="@+id/optFullTitle" style="@style/CardTitle" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:textSize="17sp" />
+                <TextView android:id="@+id/optFullDesc" style="@style/Sub" android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="18dp"
+                android:background="@drawable/bg_warn" android:padding="14dp"
+                android:text="⚠  Diskteki HER ŞEY silinecek. Lazım olan dosyaları önce telefona kopyala."
+                android:textColor="@color/err" android:textSize="15sp" />
+
+            <FrameLayout android:layout_width="match_parent" android:layout_height="60dp" android:layout_marginTop="16dp">
+                <ProgressBar android:id="@+id/holdBar" style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent" android:layout_height="match_parent" android:max="100"
+                    android:progressDrawable="@drawable/progress_bar" />
+                <TextView android:id="@+id/btnHold" android:layout_width="match_parent" android:layout_height="match_parent"
+                    android:gravity="center" android:text="Formatlamak için basılı tut" android:textColor="@color/text"
+                    android:textSize="17sp" android:textStyle="bold" />
+            </FrameLayout>
+            <TextView style="@style/Sub" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:layout_marginTop="6dp" android:gravity="center" android:text="Çubuk dolana kadar parmağını kaldırma"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Formatlama ilerlemesi -->
+        <LinearLayout android:id="@+id/progressCard" style="@style/Card" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="20dp" android:orientation="vertical" android:visibility="gone">
+            <TextView android:id="@+id/progText" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:textColor="@color/text" android:textSize="17sp" android:textStyle="bold" />
+            <ProgressBar android:id="@+id/progBar" style="?android:attr/progressBarStyleHorizontal" android:layout_width="match_parent"
+                android:layout_height="14dp" android:layout_marginTop="14dp" android:max="100"
+                android:progressDrawable="@drawable/progress_bar" />
+            <TextView style="@style/Sub" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="12dp" android:text="Diski çıkarma, uygulamayı kapatma." />
+        </LinearLayout>
+
+        <!-- Bitti -->
+        <LinearLayout android:id="@+id/doneCard" style="@style/Card" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_horizontal"
+            android:orientation="vertical" android:visibility="gone">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✓"
+                android:textColor="@color/ok" android:textSize="56sp" android:textStyle="bold" />
+            <TextView style="@style/CardTitle" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Disk hazır!" android:textSize="22sp" />
+            <TextView android:id="@+id/doneText" style="@style/Sub" android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:layout_marginTop="10dp" android:gravity="center"
+                android:lineSpacingExtra="4dp" />
+        </LinearLayout>
+        <TextView android:id="@+id/btnToVideo" style="@style/Btn" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Video Ekle'ye geç" android:visibility="gone" />
+        <TextView android:id="@+id/btnHome" style="@style/Btn2" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:text="Ana sayfa" android:visibility="gone" />
+    </LinearLayout>
+</ScrollView>

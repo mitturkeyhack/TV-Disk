@@ -1,0 +1,32 @@
+name: APK derle
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test + APK
+        run: |
+          chmod +x gradlew
+          ./gradlew :app:testReleaseUnitTest :app:assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk TV-Disk.apk
+      - name: GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" TV-Disk.apk --title "TV Disk $TAG" --latest \
+            --notes "Telefona indirip kur: TV-Disk.apk"
