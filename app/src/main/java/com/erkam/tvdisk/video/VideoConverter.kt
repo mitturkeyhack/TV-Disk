@@ -27,17 +27,51 @@ class VideoConverter(private val ctx: Context) {
     private val handler = Handler(Looper.getMainLooper())
     private var poller: Runnable? = null
 
+    /**
+     * maxShortSide: çıktının kısa kenarı en fazla bu olur (zayıf telefon 720, güçlü telefon 1080).
+     */
     fun start(
         info: VideoInfo,
         out: File,
+        maxShortSide: Int,
         onProgress: (Int) -> Unit,
         onDone: () -> Unit,
         onError: (String) -> Unit,
     ) {
         out.delete()
+        // Ekranda görünen boyut (dik videolarda en/boy yer değiştirir)
+        val swap = info.rotation == 90 || info.rotation == 270
+        val dispW = if (swap) info.height else info.width
+        val dispH = if (swap) info.width else info.height
+        val shortSide = minOf(dispW, dispH)
+        val big = info.size > VideoAnalyzer.FAT32_MAX
+
+        var targetShort = 0
+        if (info.action == VideoAction.CONVERT) {
+            targetShort = when {
+                shortSide == 0 -> 0
+                shortSide > maxShortSide -> maxShortSide
+                big -> shortSide - 8 // 4 GB'ı aşan dosyayı yeniden sıkıştırmaya zorla
+                else -> 0
+            }
+        }
+        val outShort = if (targetShort > 0) targetShort else if (shortSide > 0) shortSide else maxShortSide
+
+        // Kalite: 1080p ≈ 6 Mbit/sn, 720p ≈ 3 Mbit/sn; uzun filmler 4 GB sınırına sığacak şekilde
+        var bitrate = when {
+            outShort > 720 -> 6_000_000
+            outShort > 480 -> 3_000_000
+            else -> 1_800_000
+        }
+        val durSec = info.durationUs / 1_000_000L
+        if (durSec > 0) {
+            val fit = (3_900_000_000L * 8 / durSec - 256_000).toInt()
+            bitrate = minOf(bitrate, fit).coerceAtLeast(800_000)
+        }
+
         val encoder = DefaultEncoderFactory.Builder(ctx)
             .setRequestedVideoEncoderSettings(
-                VideoEncoderSettings.Builder().setBitrate(2_500_000).build()
+                VideoEncoderSettings.Builder().setBitrate(bitrate).build()
             )
             .setEnableFallback(true)
             .build()
@@ -64,15 +98,13 @@ class VideoConverter(private val ctx: Context) {
             .build()
         transformer = t
 
-        val effects = if (info.action == VideoAction.CONVERT) {
-            val h = minOf(info.width, info.height)
-            // Zayıf telefonda hızlı olsun diye 720p; zaten küçükse ve 4 GB'tan büyükse 480p'ye zorla
-            val target = when {
-                h == 0 || h > 720 -> 720
-                info.size > VideoAnalyzer.FAT32_MAX -> 480
-                else -> 0
-            }
-            if (target > 0) Effects(listOf(), listOf(Presentation.createForHeight(target))) else Effects.EMPTY
+        val effects = if (targetShort > 0 && dispW > 0 && dispH > 0) {
+            val scale = targetShort.toDouble() / shortSide
+            val w = (Math.round(dispW * scale / 2) * 2).toInt()
+            val h = (Math.round(dispH * scale / 2) * 2).toInt()
+            Effects(listOf(), listOf(Presentation.createForWidthAndHeight(w, h, Presentation.LAYOUT_SCALE_TO_FIT)))
+        } else if (info.action == VideoAction.CONVERT && shortSide == 0) {
+            Effects(listOf(), listOf(Presentation.createForHeight(maxShortSide)))
         } else Effects.EMPTY
 
         val item = EditedMediaItem.Builder(MediaItem.fromUri(info.uri))

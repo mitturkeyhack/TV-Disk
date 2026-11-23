@@ -37,6 +37,7 @@ class MainActivity : Activity() {
         findViewById<View>(R.id.btnVideo).setOnClickListener {
             startActivity(Intent(this, VideoActivity::class.java))
         }
+        findViewById<View>(R.id.btnWifi).setOnClickListener { chooseWifiRole() }
     }
 
     override fun onResume() {
@@ -52,6 +53,20 @@ class MainActivity : Activity() {
     override fun onPause() {
         super.onPause()
         try { unregisterReceiver(usbReceiver) } catch (_: Exception) { }
+    }
+
+    private fun chooseWifiRole() {
+        val hasDisk = UsbMassStorage.find(usb) != null
+        val items = arrayOf(
+            "Bu telefon ALSIN" + (if (hasDisk) "  (flash disk burada takılı)" else "\nFlash disk bu telefona takılı olmalı"),
+            "Bu telefon GÖNDERSİN\nVideolar bu telefonda",
+        )
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Kablosuz Aktar")
+            .setItems(items) { _, which ->
+                startActivity(Intent(this, if (which == 0) ReceiveActivity::class.java else SendActivity::class.java))
+            }
+            .show()
     }
 
     private fun refresh() {

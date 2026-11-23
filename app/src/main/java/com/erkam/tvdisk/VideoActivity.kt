@@ -32,8 +32,7 @@ class VideoActivity : Activity() {
     companion object {
         private const val REQ_DISK = 11
         private const val REQ_VIDEO = 12
-        private const val PREF_TREE = "tree"
-        private const val TARGET_DIR = "FILMLER"
+        private const val TARGET_DIR = DiskStore.TARGET_DIR
     }
 
     private class Row(val view: View, var info: VideoInfo?, val uri: Uri) {
@@ -72,7 +71,7 @@ class VideoActivity : Activity() {
         }
         btnStart.setOnClickListener { startAll() }
 
-        prefs().getString(PREF_TREE, null)?.let { treeUri = Uri.parse(it) }
+        treeUri = DiskStore.treeUri(this)
         updateDisk()
         updateSummary()
     }
@@ -100,23 +99,11 @@ class VideoActivity : Activity() {
         @Suppress("DEPRECATION") super.onBackPressed()
     }
 
-    private fun prefs() = getSharedPreferences("tvdisk", Context.MODE_PRIVATE)
-
     // ---------- Disk seçimi ----------
 
     private fun pickDisk() {
         if (running) return
-        AlertDialog.Builder(this)
-            .setTitle("USB diski seç")
-            .setMessage("Açılan pencerede sol üstteki ☰ menüden USB belleği seç (adı \"TV DISK\" olabilir).\n\n" +
-                "Sonra alttaki \"İZİN VER\" ya da \"SEÇ\" düğmesine bas.\n\n" +
-                "Disk görünmüyorsa: formatladıktan sonra diski çıkarıp tekrar taktığından emin ol.")
-            .setPositiveButton("Tamam") { _, _ ->
-                val i = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-                i.putExtra("android.content.extra.SHOW_ADVANCED", true)
-                startActivityForResult(i, REQ_DISK)
-            }
-            .show()
+        DiskStore.showPicker(this, REQ_DISK)
     }
 
     @Deprecated("Deprecated in Java")
@@ -125,23 +112,10 @@ class VideoActivity : Activity() {
         if (resultCode != RESULT_OK || data == null) return
         when (requestCode) {
             REQ_DISK -> {
-                val uri = data.data ?: return
-                try {
-                    contentResolver.takePersistableUriPermission(uri,
-                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                } catch (_: Exception) { }
-                val docId = DocumentsContract.getTreeDocumentId(uri)
-                if (docId.startsWith("primary") || docId.startsWith("home")) {
-                    AlertDialog.Builder(this)
-                        .setMessage("Seçtiğin yer telefonun kendi hafızası, flash disk değil.\nSol menüden USB belleği seç.")
-                        .setPositiveButton("Tekrar seç") { _, _ -> pickDisk() }
-                        .setNegativeButton("Vazgeç", null)
-                        .show()
-                    return
+                if (DiskStore.handlePick(this, data, REQ_DISK)) {
+                    treeUri = DiskStore.treeUri(this)
+                    updateDisk()
                 }
-                treeUri = uri
-                prefs().edit().putString(PREF_TREE, uri.toString()).apply()
-                updateDisk()
             }
             REQ_VIDEO -> {
                 val uris = mutableListOf<Uri>()
@@ -152,13 +126,7 @@ class VideoActivity : Activity() {
         }
     }
 
-    private fun diskRoot(): DocumentFile? {
-        val u = treeUri ?: return null
-        return try {
-            val d = DocumentFile.fromTreeUri(this, u)
-            if (d != null && d.exists() && d.canWrite()) d else null
-        } catch (_: Exception) { null }
-    }
+    private fun diskRoot(): DocumentFile? = DiskStore.root(this)
 
     private fun updateDisk() {
         val name = findViewById<TextView>(R.id.diskName)
@@ -243,11 +211,8 @@ class VideoActivity : Activity() {
 
     private fun startAll() {
         if (running) return
-        val root = diskRoot() ?: run { updateDisk(); return }
-        val dir = try {
-            if (root.name.equals(TARGET_DIR, true)) root
-            else root.findFile(TARGET_DIR)?.takeIf { it.isDirectory } ?: root.createDirectory(TARGET_DIR)
-        } catch (e: Exception) { null }
+        if (diskRoot() == null) { updateDisk(); return }
+        val dir = DiskStore.targetDir(this)
         if (dir == null) {
             AlertDialog.Builder(this).setMessage("Diskte klasör oluşturulamadı. Diski çıkarıp takıp tekrar seç.")
                 .setPositiveButton("Tamam", null).show()
@@ -287,7 +252,7 @@ class VideoActivity : Activity() {
         val conv = VideoConverter(this)
         converter = conv
         val baseName = tvSafeName(info.name.substringBeforeLast('.')) + ".mp4"
-        conv.start(info, tmp,
+        conv.start(info, tmp, maxShortSide = 720,
             onProgress = { p ->
                 r.bar.progress = p * 85 / 100
                 r.status.text = (if (info.action == VideoAction.REMUX) "MP4'e çevriliyor" else "Dönüştürülüyor") + "…  %$p"

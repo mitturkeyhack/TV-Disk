@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:orientation="vertical" android:padding="20dp">
+
+            <TextView android:id="@+id/back" style="@style/Back" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            <TextView style="@style/Title" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:text="Kablosuz gönder" />
+
+            <LinearLayout android:id="@+id/searchBox" style="@style/Card" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <ProgressBar android:layout_width="24dp" android:layout_height="24dp" android:indeterminateTint="@color/accent" />
+                <TextView android:id="@+id/searchText" android:layout_width="0dp" android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp" android:layout_weight="1" android:textColor="@color/text" android:textSize="15sp"
+                    android:text="Alıcı telefon aranıyor…\nDiğer telefonda Kablosuz Aktar → Al'ı aç." />
+            </LinearLayout>
+            <LinearLayout android:id="@+id/peers" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+            <TextView android:id="@+id/btnManual" android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:layout_marginTop="10dp" android:padding="6dp" android:background="?android:attr/selectableItemBackground"
+                android:text="Bulamıyor musun? Adresle bağlan" android:textColor="@color/accent" android:textSize="14sp" />
+
+            <TextView android:id="@+id/btnPickVideo" style="@style/Btn2" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="12dp" android:text="+  Video seç" />
+            <TextView android:id="@+id/empty" style="@style/Sub" android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_marginTop="20dp" android:gravity="center"
+                android:lineSpacingExtra="4dp"
+                android:text="Gönderilecek videoları seç.\nTV'ye uymayanları bu telefon 1080p olarak dönüştürüp gönderir." />
+            <LinearLayout android:id="@+id/list" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:background="@color/card" android:orientation="vertical" android:paddingLeft="20dp"
+        android:paddingRight="20dp" android:paddingBottom="16dp">
+        <TextView android:id="@+id/summary" style="@style/Sub" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="12dp" android:gravity="center" android:textSize="14sp" />
+        <TextView android:id="@+id/btnStart" style="@style/Btn" android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="Gönder" />
+    </LinearLayout>
+</LinearLayout>

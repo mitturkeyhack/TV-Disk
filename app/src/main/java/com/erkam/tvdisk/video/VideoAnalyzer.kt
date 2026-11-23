@@ -20,6 +20,7 @@ data class VideoInfo(
     val durationUs: Long,
     val action: VideoAction,
     val reason: String,
+    val rotation: Int = 0,
 ) {
     val description: String
         get() {
@@ -55,6 +56,7 @@ object VideoAnalyzer {
         var aMime: String? = null
         var w = 0; var h = 0
         var dur = 0L
+        var rot = 0
         var readable = true
         val ex = MediaExtractor()
         try {
@@ -67,6 +69,7 @@ object VideoAnalyzer {
                     if (f.containsKey(MediaFormat.KEY_WIDTH)) w = f.getInteger(MediaFormat.KEY_WIDTH)
                     if (f.containsKey(MediaFormat.KEY_HEIGHT)) h = f.getInteger(MediaFormat.KEY_HEIGHT)
                     if (f.containsKey(MediaFormat.KEY_DURATION)) dur = f.getLong(MediaFormat.KEY_DURATION)
+                    if (f.containsKey("rotation-degrees")) rot = f.getInteger("rotation-degrees")
                 } else if (m.startsWith("audio/") && aMime == null) {
                     aMime = m
                     if (dur == 0L && f.containsKey(MediaFormat.KEY_DURATION)) dur = f.getLong(MediaFormat.KEY_DURATION)
@@ -98,14 +101,14 @@ object VideoAnalyzer {
         val contOk = ext in okContainers
 
         val (action, reason) = when {
-            big -> VideoAction.CONVERT to "4 GB'tan büyük; FAT32'ye sığması için 720p'ye küçültülecek"
+            big -> VideoAction.CONVERT to "4 GB'tan büyük; FAT32'ye sığması için yeniden sıkıştırılacak"
             videoOk && audioOk && contOk -> VideoAction.COPY to "TV'ye uygun, olduğu gibi kopyalanır"
             isH264 && sizeOk -> VideoAction.REMUX to
                 (if (!contOk) "${ext.uppercase()} kabı MP4'e çevrilecek (hızlı)" else "Ses TV'ye uygun hale getirilecek (hızlı)")
-            !sizeOk -> VideoAction.CONVERT to "Çözünürlük yüksek; 720p H.264'e dönüştürülecek (uzun sürer)"
+            !sizeOk -> VideoAction.CONVERT to "Çözünürlük yüksek; TV'ye uygun H.264'e dönüştürülecek (uzun sürer)"
             else -> VideoAction.CONVERT to "${codecName(vMime)} eski TV'de açılmaz; H.264'e dönüştürülecek (uzun sürer)"
         }
-        return VideoInfo(uri, name, size, ext, vMime, w, h, aMime, dur, action, reason)
+        return VideoInfo(uri, name, size, ext, vMime, w, h, aMime, dur, action, reason, rot)
     }
 }
 
