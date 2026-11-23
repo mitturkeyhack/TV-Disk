@@ -27,6 +27,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v1.1.${{ github.run_number }}"
+          TAG="v1.2.${{ github.run_number }}"
           gh release create "$TAG" TV-Disk.apk --title "TV Disk $TAG" --latest \
             --notes "Telefona indirip kur: TV-Disk.apk"

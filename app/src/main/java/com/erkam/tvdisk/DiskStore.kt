@@ -27,12 +27,25 @@ object DiskStore {
     }
 
     /** FILMLER klasörünü bulur ya da oluşturur. */
-    fun targetDir(ctx: Context): DocumentFile? {
+    fun targetDir(ctx: Context): DocumentFile? = dirNamed(ctx, TARGET_DIR)
+
+    /** Flash diskteki bir klasörü (FILMLER, MUZIK, FOTOLAR) bulur ya da oluşturur. */
+    fun dirNamed(ctx: Context, name: String): DocumentFile? {
         val r = root(ctx) ?: return null
         return try {
-            if (r.name.equals(TARGET_DIR, true)) r
-            else r.findFile(TARGET_DIR)?.takeIf { it.isDirectory } ?: r.createDirectory(TARGET_DIR)
+            if (r.name.equals(name, true)) r
+            else r.findFile(name)?.takeIf { it.isDirectory } ?: r.createDirectory(name)
         } catch (_: Exception) { null }
+    }
+
+    /** "MUZIK/şarkı.mp3" gibi gelen adı (klasör, dosya adı) olarak ayırır; klasörsüzse FILMLER. */
+    fun splitName(name: String): Pair<String, String> {
+        val i = name.indexOf('/')
+        if (i > 0) {
+            val d = name.substring(0, i).uppercase()
+            if (d in setOf("FILMLER", "MUZIK", "FOTOLAR")) return d to name.substring(i + 1)
+        }
+        return TARGET_DIR to name
     }
 
     /** Flash diskteki boş alan; bilinemezse -1. */

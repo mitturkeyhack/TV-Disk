@@ -193,8 +193,9 @@ class ReceiveActivity : Activity() {
         }
 
         override fun create(name: String): SinkTarget {
-            val dir = DiskStore.targetDir(this@ReceiveActivity) ?: throw IOException("Disk yok")
-            val f = dir.createFile("application/octet-stream", tvSafeName(name)) ?: throw IOException("Dosya oluşturulamadı")
+            val (folder, file) = DiskStore.splitName(name)
+            val dir = DiskStore.dirNamed(this@ReceiveActivity, folder) ?: throw IOException("Disk yok")
+            val f = dir.createFile("application/octet-stream", tvSafeName(file)) ?: throw IOException("Dosya oluşturulamadı")
             val os = contentResolver.openOutputStream(f.uri) ?: throw IOException("Diske yazılamadı")
             return object : SinkTarget {
                 override val out: OutputStream = os
